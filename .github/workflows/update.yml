@@ -33,7 +33,7 @@ jobs:
           git fetch upstream
           git branch update upstream/v4
           git checkout -b update-quartz
-          git merge update
+          git merge update --allow-unrelated-histories
           git push origin update-quartz
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
