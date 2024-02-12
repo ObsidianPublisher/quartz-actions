@@ -43,7 +43,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Pull request
         id: cpr
-        uses: gr2m/create-or-update-pull-request-action@v1.9.2
+        uses: gr2m/create-or-update-pull-request-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
