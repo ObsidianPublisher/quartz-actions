@@ -42,16 +42,18 @@ jobs:
           git status >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Pull request
-        uses: peter-evans/create-pull-request@v5
         id: cpr
+        uses: gr2m/create-or-update-pull-request-action@v1.9.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          token: ${{ secrets.GH_TOKEN }}
           commit-message: "chore: update Quartz"
-          title: "chore: update Quartz"
-          body: ${{ steps.status.outputs.status }}
-          base: "update-quartz"
+          title: "Update Quartz"
+          body: ${{ steps.status.outputs.GITHUB_OUTPUT }}
+          branch: update-quartz
+
       - name: Auto-merge if possible
-        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.pull-request-operation == 'created'}}
+        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.result == 'created'}}
         id: merge
         run: |
           gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash
