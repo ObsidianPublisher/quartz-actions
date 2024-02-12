@@ -49,8 +49,8 @@ jobs:
           commit-message: "chore: update Quartz"
           title: "chore: update Quartz"
           body: ${{ steps.status.outputs.status }}
-          branch: "update-quartz"
-          base: ${{ github.event.repository.default_branch }}
+          branch: ${{ github.ref.default_branch }}
+          base: "update-quartz"
       - name: Auto-merge if possible
         if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.pull-request-operation == 'created'}}
         id: merge
