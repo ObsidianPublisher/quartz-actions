@@ -7,6 +7,10 @@ on:
         type: boolean
         required: false
         description: "Auto-merge the changes to the default branch"
+    secrets:
+      GH_TOKEN:
+        description: "GitHub token"
+        required: true
 
 jobs:
   update-quartz:
