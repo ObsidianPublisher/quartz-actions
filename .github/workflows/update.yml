@@ -1,0 +1,56 @@
+name: Update Quartz
+on:
+  workflow_call:
+    inputs:
+      AUTO_MERGE:
+        default: false
+        type: boolean
+        required: false
+        description: "Auto-merge the changes to the default branch"
+
+jobs:
+  update-quartz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Install dependencies
+        run: npm install
+      - name: Update Quartz
+        run: npx quartz update
+      - name: Status of changes
+        id: status
+        run: |
+          echo "STATUS<<EOF" >> $GITHUB_OUTPUT
+          git status >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Pull request
+        uses: peter-evans/create-pull-request@v5
+        id: cpr
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: "chore: update Quartz"
+          title: "chore: update Quartz"
+          body: ${{ steps.status.outputs.status }}
+          branch: "update-quartz"
+          base: "main"
+      - name: Auto-merge if possible
+        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.pull-request-operation == 'created'}}
+        id: merge
+        run: |
+          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash
+          echo "PR merged successfully"
+          echo "done=true" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Delete updated branch if possible
+        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.merge.outputs.done == 'true'}}
+        run: |
+          if [ -n "$(git ls-remote --heads origin update-quartz)" ]; then
+            git push origin --delete update-quartz
+            echo "Branch deleted successfully"
+          else
+            echo "Branch not found"
+          fi
