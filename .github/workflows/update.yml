@@ -32,6 +32,7 @@ jobs:
           git remote add upstream https://github.com/jackyzha0/quartz.git
           git fetch upstream
           git checkout -b update-quartz upstream/v4
+          git merge ${{ github.event.inputs.HEAD_SHA }}
           git push origin update-quartz
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
