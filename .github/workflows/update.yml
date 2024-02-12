@@ -23,7 +23,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Update Quartz
-        run: npx quartz update
+        run: |
+          git remote add upstream https://github.com/jackyzha0/quartz.git
+          git pull upstream v4
       - name: Status of changes
         id: status
         run: |
@@ -38,8 +40,8 @@ jobs:
           commit-message: "chore: update Quartz"
           title: "chore: update Quartz"
           body: ${{ steps.status.outputs.status }}
-          branch: "update-quartz"
-          base: "main"
+          branch: "v4"
+          base: ${{ github.event.repository.default_branch }}
       - name: Auto-merge if possible
         if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.pull-request-operation == 'created'}}
         id: merge
@@ -52,8 +54,8 @@ jobs:
       - name: Delete updated branch if possible
         if: ${{ github.event.inputs.AUTO_MERGE == true && steps.merge.outputs.done == 'true'}}
         run: |
-          if [ -n "$(git ls-remote --heads origin update-quartz)" ]; then
-            git push origin --delete update-quartz
+          if [ -n "$(git ls-remote --heads origin v4)" ]; then
+            git push origin --delete v4
             echo "Branch deleted successfully"
           else
             echo "Branch not found"
