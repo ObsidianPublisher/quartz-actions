@@ -40,7 +40,7 @@ jobs:
           git remote add upstream https://github.com/jackyzha0/quartz.git
           git fetch upstream
           git branch update upstream/v4
-          git merge --allow-unrelated-histories -X theirs update
+          git merge --allow-unrelated-histories -X ours update
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Status of changes
