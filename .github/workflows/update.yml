@@ -12,11 +12,16 @@ on:
         description: "GitHub token"
         required: true
 
+permissions:
+  actions: write
+
 jobs:
   update-quartz:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -28,6 +33,8 @@ jobs:
           git fetch upstream
           git checkout -b update-quartz upstream/v4
           git push origin update-quartz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Status of changes
         id: status
         run: |
