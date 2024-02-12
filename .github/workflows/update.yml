@@ -11,6 +11,12 @@ on:
       GH_TOKEN:
         description: "GitHub token"
         required: true
+      author_email:
+        description: "Author email"
+        required: false
+      author_name:
+        description: "Author name"
+        required: false
 
 permissions:
   actions: write
@@ -29,10 +35,11 @@ jobs:
         run: npm install
       - name: Update Quartz
         run: |
+          git config --global user.email "${{secrets.author_email || '41898282+github-actions[bot]@users.noreply.github.com'}}"
+          git config --global user.name "${{secrets.author_name || 'github-actions[bot]'}}"
           git remote add upstream https://github.com/jackyzha0/quartz.git
           git fetch upstream
           git branch update upstream/v4
-          git checkout -b update-quartz
           git merge update --allow-unrelated-histories
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -44,17 +51,14 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Pull request
         id: cpr
-        uses: gr2m/create-or-update-pull-request-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "Update Quartz"
-          title: "Update Quartz"
-          body: "This PR updates Quartz to the latest version"
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: Update from template
+          title: "[BUMP] Update from template"
           branch: update-quartz
-
       - name: Auto-merge if possible
-        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.result == 'created'}}
+        if: ${{ github.event.inputs.AUTO_MERGE == true && steps.cpr.outputs.pull-request-operation == 'created'}}
         id: merge
         run: |
           gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash
