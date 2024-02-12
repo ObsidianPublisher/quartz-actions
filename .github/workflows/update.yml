@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          gh pr create --title "Update Quartz" --body "${{steps.status.outputs.status}}" --base main --head update-quartz
+          gh pr create --title "Update Quartz" --base main --head update-quartz
           echo "done=true" >> $GITHUB_OUTPUT
 
       - name: Auto-merge if possible
